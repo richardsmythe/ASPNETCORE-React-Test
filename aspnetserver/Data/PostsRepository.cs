@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System;
 
 namespace aspnetserver.Data
 {
@@ -21,7 +22,7 @@ namespace aspnetserver.Data
 
         }
 
-        internal async static Task<bool>CreatePostAsync(Post postToCreate)
+        internal async static Task<bool> CreatePostAsync(Post postToCreate)
         {
             using (var db = new AppDbContext())
             {
@@ -35,7 +36,7 @@ namespace aspnetserver.Data
                 {
                     return false;
                 }
-            }    
+            }
 
         }
 
@@ -46,15 +47,14 @@ namespace aspnetserver.Data
                 try
                 {
                     db.Posts.Update(postToUpdate);
-                    return await db.SaveChangesAsync() >= 1;
 
+                    return await db.SaveChangesAsync() >= 1;
                 }
-                catch (Exception ex)
+                catch (Exception e)
                 {
                     return false;
                 }
             }
-
         }
 
         internal async static Task<bool> DeletePostAsync(int postId)

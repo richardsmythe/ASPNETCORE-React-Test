@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import Constants from "./Utilities/Constants";
 import PostCreateForm from "./Components/postCreateForm";
+import PostUpdateForm from "./Components/postUpdateForm";
 
 export default function App() {
   const [posts, setPosts] = useState([]); // store all posts in js array, default value is empty array
   const [showingCreateNewPostForm, setShowingCreateNewPostForm] = useState(false);
+  const [postCurrentlyBeingUpdated, setPostCurrentlyBeingUpdated] = useState(null);
 
   function getPosts() {
     const url = Constants.API_URL_GET_ALL_POSTS;
@@ -23,11 +25,29 @@ export default function App() {
 
   }
 
+  function deletePost(postId) {
+    const url = `${Constants.API_URL_DELETE_POST_BY_ID}/${postId}`;
+
+    fetch(url, {
+      method: 'DELETE'
+    })
+      .then(response => response.json())
+      .then(responseFromServer => {
+        console.log(responseFromServer);
+        onPostDeleted(postId);
+      })
+      .catch((error) => {
+        console.log(error);
+        alert(error);
+      });
+  }
+
   return (
     <div className="container">
       <div className="row min-vh-100">
         <div className="col d-flex flex-column justify-content-center align-items-center">
-          {showingCreateNewPostForm === false && (
+          {/* if false and null then display... */}
+          {(showingCreateNewPostForm === false && postCurrentlyBeingUpdated === null) && (
             <div>
               <h1>ASP.NET Core React Test</h1>
 
@@ -38,9 +58,12 @@ export default function App() {
             </div>
           )}
           {/* if posts then render table */}
-          {(posts.length > 0 && showingCreateNewPostForm === false) && renderPostsTable()}
+          {(posts.length > 0 && showingCreateNewPostForm === false && postCurrentlyBeingUpdated === null) && renderPostsTable()}
           {/* like a delegate in c# */}
           {showingCreateNewPostForm && <PostCreateForm onPostCreated={onPostCreated} />}
+          {/* display post update form if post currently being updated is not null*/}
+          {postCurrentlyBeingUpdated !== null && <PostUpdateForm post={postCurrentlyBeingUpdated} onPostUpdated={onPostUpdated} />}
+
         </div>
       </div>
     </div>
@@ -66,8 +89,8 @@ export default function App() {
                 <td>{post.title}</td>
                 <td>{post.content}</td>
                 <td>
-                  <button className="btn btn-dark btn-lg mx-3 my-3">Update</button>
-                  <button className="btn btn-secondary btn-lg">Delete</button>
+                  <button onClick={() => setPostCurrentlyBeingUpdated(post)} className="btn btn-dark btn-lg mx-3 my-3">Update</button>
+                  <button onClick={() => { if (window.confirm(`Are you sure you want to delete "${post.title}"?`)) deletePost(post.postId) }} className="btn btn-secondary btn-lg">Delete</button>
                 </td>
               </tr>
             ))}
@@ -86,4 +109,53 @@ export default function App() {
     alert(`Post successfully created. New post "${createdPost.title}" will show up in the table below.`);
     getPosts();
   }
+
+  function onPostUpdated(updatedPost) {
+    setPostCurrentlyBeingUpdated(null);
+
+    if (updatedPost === null) {
+      return;
+    }
+
+    let postsCopy = [...posts];
+
+    const index = postsCopy.findIndex((postsCopyPost, currentIndex) => {
+      if (postsCopyPost.postId === updatedPost.postId) {
+        return true;
+      }
+    });
+
+    if (index !== -1) {
+      postsCopy[index] = updatedPost;
+    }
+
+    setPosts(postsCopy);
+
+    alert(`Post successfully updated.`);
+  }
+
+  function onPostDeleted(deletedPostPostId) {
+    //make copy of post array instead of doing another api call. 
+    // let used for variables that will change often.
+    let postsCopy = [...posts];
+
+    // get index of post
+    const index = postsCopy.findIndex((postsCopyPost, currentIndex) => {
+      //like a foreach loop over all posts. if copied post === deletedPostPostId id then return true
+      if (postsCopyPost.postId === deletedPostPostId) {
+        return true;
+      }
+    });
+
+    if (index !== -1) {
+      //remove from post array
+      postsCopy.splice(index, 1) 
+    }
+    //update posts array state with postCopy
+    setPosts(postsCopy);
+
+    alert('Post deleted.');
+  }
 }
+
+

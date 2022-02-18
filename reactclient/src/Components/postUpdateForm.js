@@ -33,7 +33,7 @@ export default function PostUpdateForm(props) {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(postToUpdate) //convert to json string
+            body: JSON.stringify(postToUpdate)
         })
             .then(response => response.json())
             .then(responseFromServer => {
@@ -49,10 +49,9 @@ export default function PostUpdateForm(props) {
 
     };
 
-
     return (
         <form className="w-100 px-5">
-            <h1 className="mt-5">Updating the post "{props.post.title}".</h1>
+            <h1 className="mt-5">Updating the post titled "{props.post.title}".</h1>
 
             <div className="mt-5">
                 <label className="h3 form-label">Post title</label>
