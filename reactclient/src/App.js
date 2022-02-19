@@ -132,6 +132,7 @@ export default function App() {
     setPosts(postsCopy);
 
     alert(`Post successfully updated.`);
+    getPosts();
   }
 
   function onPostDeleted(deletedPostPostId) {

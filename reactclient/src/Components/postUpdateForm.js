@@ -17,17 +17,16 @@ export default function PostUpdateForm(props) {
     };
 
     const handleSubmit = (event) => {
-        event.preventDefault(); // prevent default action from happening when form is submitted
+        event.preventDefault();
 
         const postToUpdate = {
-            postId: props.post.postid,
+            postId: props.post.postId,
             title: formData.title,
             content: formData.content
         };
 
         const url = Constants.API_URL_UPDATE_POST;
 
-        // js fetch api for post request up to server
         fetch(url, {
             method: 'PUT',
             headers: {
@@ -43,11 +42,10 @@ export default function PostUpdateForm(props) {
                 console.log(error);
                 alert(error);
             });
-        // call function that post has been created using props
-        // props are a way to send data between react components
-        props.onPostUpdated(postToUpdate);
 
+        props.onPostUpdated(postToUpdate);
     };
+
 
     return (
         <form className="w-100 px-5">
