@@ -49,7 +49,6 @@ export default function PostCreateForm(props) {
 
     };
 
-
     return (
         <form className="w-100 px-5">
             <h1 className="mt-5">Create new post</h1>
